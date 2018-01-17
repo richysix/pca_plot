@@ -1,0 +1,106 @@
+for (package in c('shiny', 
+                  'shinyjs',
+                  'ggplot2')) {
+  library(package, character.only = TRUE)
+}
+
+ui <- fluidPage(useShinyjs(),
+                # Include shinyjs
+                navbarPage(
+                  "PCA plot",
+                  tabPanel("PCA plot",
+                           sidebarLayout(
+                             sidebarPanel(
+                               fileInput('pca_data_file', 'Load PCA data file'),
+                               fileInput('sample_file', 'Load Sample file'),
+                               
+                               h4("Options"),
+                               # checkbox for displaying sample names
+                               checkboxInput("sample_names", 
+                                             label = 'Sample Names',
+                                             value = TRUE),
+                               
+                               # Fill colour buttons
+                               radioButtons(
+                                 "fill_var",
+                                 label = h5("Fill colour Variable"),
+                                 choices = list(
+                                   "Gene" = 'Gene',
+                                   "Genotype" = 'Genotype'
+                                 ),
+                                 selected = 'Gene'
+                               ),
+                               checkboxGroupInput(
+                                 "fill_levels_checkgroup",
+                                 label = h6("Fill levels"),
+                                 choices = list(),
+                                 selected = c()
+                               ),
+                               # Shape buttons
+                               radioButtons(
+                                 "shape_var",
+                                 label = h5("Shape Variable"),
+                                 choices = list(
+                                   "None" = 'None',
+                                   "Gene" = 'Gene',
+                                   "Genotype" = 'Genotype'
+                                 ),
+                                 selected = 'None'
+                               ),
+                               checkboxGroupInput(
+                                 "shape_levels_checkgroup",
+                                 label = h6("Shape levels"),
+                                 choices = list(),
+                                 selected = c()
+                               ),
+                               # x axis buttons
+                               radioButtons(
+                                 "x_axis_pc",
+                                 label = h5("X axis component"),
+                                 choices = list(
+                                   "PC1" = 1,
+                                   "PC2" = 2
+                                 ),
+                                 selected = 1
+                               ),
+                               # y axis buttons
+                               radioButtons(
+                                 "y_axis_pc",
+                                 label = h5("Y axis component"),
+                                 choices = list(
+                                   "PC1" = 1,
+                                   "PC2" = 2
+                                 ),
+                                 selected = 2
+                               ),
+                               hr(),
+                               h4('Set Limits'),
+                               numericInput('min_x', 'Min X:', NULL, min = NA, max = NA, step = NA,
+                                            width = NULL),
+                               numericInput('max_x', 'Max X:', NULL, min = NA, max = NA, step = NA,
+                                            width = NULL),
+                               numericInput('min_y', 'Min Y:', NULL, min = NA, max = NA, step = NA,
+                                            width = NULL),
+                               numericInput('max_y', 'Max Y:', NULL, min = NA, max = NA, step = NA,
+                                            width = NULL),
+                               actionButton('apply_limits', 'Apply', icon = NULL, width = NULL),
+                               # actionButton('reset_limits', 'Reset', icon = NULL, width = NULL),
+                               hr(),
+                               h4('Downloads'),
+                               downloadButton('download_current', 'Download Current Plot'),
+                               downloadButton('download_all', 'Download all'),
+                               width = 3
+                             ),
+                             mainPanel(
+                               plotOutput(
+                                 "pca_plot",
+                                 # hover = hoverOpts(
+                                 #   id = "plot_hover"
+                                 # ),
+                                 height = "640px"
+                               ),
+                               width = 9
+                             )
+                           )),
+                  tabPanel("Help", includeMarkdown("README.md"))
+))
