@@ -353,10 +353,23 @@ shinyServer(function(input, output, session) {
         first <- paste0('PC', i)
         second <- paste0('PC', i + 1)
         plot <- create_pca_plot(plot_data, x_component = first, y_component = second,
-                                colour_palette(), shape_palette(), input, session)
+                                colour_palette(), shape_palette(), isolate(reactiveValuesToList(limits)),
+                                input, session)
         print(plot)
       }
       dev.off()  # close device
+    },
+    contentType = 'image/pdf'
+  )
+  
+  # download an rda file of the current plot
+  output$download_rda <- downloadHandler(
+    filename = function() {
+      paste('pca_plot', Sys.Date(), 'rda', sep = '.')
+    },
+    content = function(file) {
+      pca_plot <- pca_plot_obj()
+      save(pca_plot, file = file)
     }
   )
 })
