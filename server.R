@@ -1,7 +1,9 @@
 for (package in c('shiny',
+                  'shinyBS',
                   'ggplot2',
                   'reshape2',
-                  'scales')) {
+                  'scales',
+                  'svglite')) {
   library(package, character.only = TRUE)
 }
 
@@ -10,7 +12,7 @@ source('R/pca_plots.R')
 
 # set default shape and fill palettes
 # shape_palette <- 21:25
-shape_palette <- c(wt = 21, het = 22, hom = 23)
+#shape_palette <- c(wt = 21, het = 22, hom = 23)
 colour_blind_palette <- 
   c( 'blue' = rgb(0,0.45,0.7),
      'yellow' = rgb(0.95, 0.9, 0.25),
@@ -305,18 +307,35 @@ shinyServer(function(input, output, session) {
   # for downloading the plot as a pdf/png
   output$download_current <- downloadHandler(
     filename = function() {
-      paste('pca_plot', Sys.Date(), 'pdf', sep = '.')
+      paste('pca_plot', Sys.Date(), input$plotFormat, sep = '.')
     },
     content = function(file) {
-      pdf(file,
+      if (input$plotFormat == "pdf") {
+        pdf(file,
           paper = "special",
           height = 7,
           width = 10) # open the pdf device
+      } else if (input$plotFormat == "eps") {
+        postscript(file,
+                   paper = "special",
+                   height = 7,
+                   width = 10) # open the postscript device
+      } else if (input$plotFormat == "svg") {
+        svglite(file,
+                height = 7,
+                width = 10) # open the svg device
+      } else if (input$plotFormat == "png") {
+        png(file,
+            height = 960,
+            width = 480,
+            res = 100) # open the png device
+      }
       print(pca_plot_obj())
       dev.off()  # close device
-    }
+    },
+    contentType = paste0('image', input$plotFormat)
   )
-  
+
   # for downloading a pdf of each component plotted against the next one
   output$download_all <- downloadHandler(
     filename = function() {

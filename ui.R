@@ -1,11 +1,13 @@
 for (package in c('shiny', 
                   'shinyjs',
+                  'shinyBS',
                   'ggplot2')) {
   library(package, character.only = TRUE)
 }
 
-ui <- fluidPage(useShinyjs(),
+ui <- fluidPage(
                 # Include shinyjs
+                useShinyjs(),
                 navbarPage(
                   "PCA plot",
                   tabPanel("PCA plot",
@@ -73,6 +75,7 @@ ui <- fluidPage(useShinyjs(),
                                  ),
                                  selected = 2
                                ),
+                               sliderInput('point_size', 'Point Size', min = 1, max = 5, value = 4, step = 1),
                                hr(),
                                h4('Set Limits'),
                                numericInput('min_x', 'Min X:', NULL, min = NA, max = NA, step = NA,
@@ -87,17 +90,42 @@ ui <- fluidPage(useShinyjs(),
                                # actionButton('reset_limits', 'Reset', icon = NULL, width = NULL),
                                hr(),
                                h4('Downloads'),
+                               radioButtons(
+                                 "plotFormat",
+                                 label = h5("Plot File"),
+                                 choices = list('pdf' = 'pdf', 
+                                                'eps' = 'eps',
+                                                'svg' = 'svg',
+                                                'png' = 'png'),
+                                 selected = 'pdf'
+                               ),
                                downloadButton('download_current', 'Download Current Plot'),
-                               downloadButton('download_all', 'Download all'),
+                               hr(),
+                               downloadButton('download_all', 'Download all (pdf)'),
+                               hr(),
+                               downloadButton('download_rda', 'Download rda file of plot'),
                                width = 3
                              ),
                              mainPanel(
-                               plotOutput(
-                                 "pca_plot",
-                                 # hover = hoverOpts(
-                                 #   id = "plot_hover"
-                                 # ),
-                                 height = "640px"
+                               fluidPage(
+                                 fluidRow(
+                                   column(width = 12,
+                                          bsAlert("Alert")
+                                   )
+                                 ),
+                                 plotOutput(
+                                   "pca_plot",
+                                   hover = hoverOpts(
+                                     id = "plot_hover"
+                                   ),
+                                   height = "640px"
+                                 ),
+                                 fluidRow(
+                                   column(width = 12,
+                                          h4("Selected Sample"),
+                                          verbatimTextOutput("hover_info", placeholder = TRUE)
+                                   )
+                                 )                     
                                ),
                                width = 9
                              )
