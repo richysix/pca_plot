@@ -24,7 +24,14 @@ colour_blind_palette <-
 shinyServer(function(input, output, session) {
   # set testing and debugging options
   session$userData[['debug']] <- TRUE
-  session$userData[['testing']] <- TRUE
+  session$userData[['testing']] <- FALSE
+  
+  limits <- reactiveValues(
+    xmin = NA,
+    xmax = NA,
+    ymin = NA,
+    ymax = NA
+  )
   
   combined_data <- reactive({
     if (session$userData[['debug']]) {
@@ -209,21 +216,24 @@ shinyServer(function(input, output, session) {
     if (is.null(plot_data)) {
       return(NULL)
     }
-    x_component <- paste0('PC', isolate(input$x_axis_pc))
-    y_component <- paste0('PC', isolate(input$y_axis_pc))
-    old_vals <- calculate_limits(plot_data, x_component, y_component, session)
-    current_vals <- c(isolate(input$min_x), isolate(input$max_x),
-                      isolate(input$min_y), isolate(input$max_y) )
-    if (session$userData[['debug']]) {
-      print(current_vals)
+    limits$xmin = isolate(input$min_x)
+    limits$xmax = isolate(input$max_x)
+    limits$ymin = isolate(input$min_y)
+    limits$ymax = isolate(input$max_y)
+  })
+
+  output$hover_info <- renderPrint({
+    # Because it's a ggplot2, we don't need to supply xvar or yvar; if this
+    # were a base graphics plot, we'd need those.
+    nearest_sample <- nearPoints(combined_data(), input$plot_hover, threshold = 5, maxpoints = 1)
+    if (is.null(nearest_sample)) {
+      return(NULL)
+    } else if (nrow(nearest_sample) == 0) {
+      return(NULL)
+    } else {
+      return(nearest_sample)
     }
-    if (is.null(button_val) | button_val == 0 |
-        all(is.na(current_vals))) {
-      updateNumericInput(session, 'min_x', value = old_vals[1])
-      updateNumericInput(session, 'max_x', value = old_vals[2])
-      updateNumericInput(session, 'min_y', value = old_vals[3])
-      updateNumericInput(session, 'max_y', value = old_vals[4])
-    }
+    
   })
   
   # observe({
@@ -281,7 +291,8 @@ shinyServer(function(input, output, session) {
       first <- paste0('PC', input$x_axis_pc)
       second <- paste0('PC', input$y_axis_pc)
       plot <- create_pca_plot(plot_data, x_component = first, y_component = second,
-                              colour_palette(), shape_palette(), input, session)
+                              colour_palette(), shape_palette(), reactiveValuesToList(limits),
+                              input, session)
       return(plot)
     }
   })

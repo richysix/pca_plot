@@ -22,7 +22,7 @@
 #' @export
 #'
 create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
-                            fill_palette, shape_palette, input, session) {
+                            fill_palette, shape_palette, current_limits, input, session) {
   fill_var <- input$fill_var
   shape_var <- input$shape_var
   fill_levels <- input$fill_levels_checkgroup
@@ -42,23 +42,28 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
                                x_component, y_component,
                                fill_var, fill_palette, 
                                shape_var, shape_palette,
-                               sample_names = input$sample_names)
+                               sample_names = input$sample_names,
+                               point_size = input$point_size)
   # set limits
-  button_val <- input$apply_limits
-  if (!is.null(button_val) & button_val > 0) {
-    min_x = isolate(input$min_x)
-    max_x = isolate(input$max_x)
-    min_y = isolate(input$min_y)
-    max_y = isolate(input$max_y)
-    new_vals <- c(min_x, max_x, min_y, max_y)
-    old_vals <- calculate_limits(plot_data, x_component, y_component, session)
-    for (i in 1:4) {
-      new_vals[i] <- ifelse(is.na(new_vals[i]), old_vals[i], new_vals[i])
-    }
-    plot <- plot + xlim(new_vals[1:2]) + ylim(new_vals[3:4])
-  }
+  # button_val <- input$apply_limits
+  limits <- get_limits(current_limits, plot_data, x_component, y_component, session)
+  plot <- plot + xlim(c(limits$xmin, limits$xmax)) + ylim(c(limits$ymin, limits$ymax))
   
   return(plot)
+}
+
+get_limits <- function(current_limits, plot_data, x_component, y_component, session){
+  data_limits <- calculate_limits(plot_data, x_component, y_component, session)
+  new_limits <- list()
+  for (i in c('xmin', 'xmax', 'ymin', 'ymax')) {
+    new_limits[[i]] <- ifelse(is.na(current_limits[[i]]), data_limits[[i]], current_limits[[i]])
+  }
+  if (session$userData[['debug']]) {
+    print(current_limits)
+    print(data_limits)
+    print(new_limits)
+  }
+  return(new_limits)
 }
 
 #' calculate_limits
@@ -81,10 +86,10 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
 #'
 
 calculate_limits <- function(plot_data, x_component, y_component, session) {
-  limits <- c(floor(min(plot_data[[x_component]])),
-              ceiling(max(plot_data[[x_component]]) + 0.5),
-              floor(min(plot_data[[y_component]])),
-              ceiling(max(plot_data[[y_component]]) + 0.5))
+  limits <- list( xmin = floor(min(plot_data[[x_component]])),
+                  xmax = ceiling(max(plot_data[[x_component]]) + 0.5),
+                  ymin = floor(min(plot_data[[y_component]])),
+                  ymax = ceiling(max(plot_data[[y_component]]) + 0.5))
   return(limits)
 }
 
@@ -117,20 +122,21 @@ scatterplot_two_components <-
   function(plot_data, x_component, y_component,
             fill_var, fill_palette, 
             shape_var, shape_palette,
-            sample_names = TRUE) {
+            sample_names = TRUE,
+            point_size = 4) {
   plot <- ggplot(data = plot_data,
                  aes_(x = as.name(x_component), y = as.name(y_component)))
   
   if (shape_var == 'None') {
     plot <- plot +
       geom_point(aes_(fill = as.name(fill_var)),
-                 size = 4, shape = 21,
+                 size = point_size, shape = 21,
                  colour = 'black')
   } else {
     plot <- plot +
       geom_point(aes_(fill = as.name(fill_var),
                       shape = as.name(shape_var)),
-                 size = 4,
+                 size = point_size,
                  colour = 'black') +
       scale_shape_manual(values = shape_palette,
                          guide = guide_legend(order = 2))
