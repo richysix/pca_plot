@@ -92,6 +92,10 @@ load_sample_data <- function(sample_file, session){
                levels = c('wt', 'het', 'hom'))
     }
   }
-
+  
+  if (session$userData[['debug']]) {
+    print(head(sample_info))
+  }
+  
   return(sample_info)
 }
