@@ -54,11 +54,14 @@ shinyServer(function(input, output, session) {
     }
     if (!is.null(data_file_info) &
         !is.null(sample_file_info)) {
-      combined_data <- load_data(
-        data_file_info$datapath,
-        sample_file_info$datapath,
-        session
-      )
+      if (session$userData[['testing']]){
+        load('R/sysdata.rda')
+      } else {
+        combined_data <- load_data(
+          data_file_info$datapath,
+          sample_file_info$datapath,
+          session )
+      }
     } else {
       return(NULL)
     }
