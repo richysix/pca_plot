@@ -227,19 +227,19 @@ shinyServer(function(input, output, session) {
     limits$ymax = isolate(input$max_y)
   })
 
-  output$hover_info <- renderPrint({
-    # Because it's a ggplot2, we don't need to supply xvar or yvar; if this
-    # were a base graphics plot, we'd need those.
-    nearest_sample <- nearPoints(combined_data(), input$plot_hover, threshold = 5, maxpoints = 1)
-    if (is.null(nearest_sample)) {
-      return(NULL)
-    } else if (nrow(nearest_sample) == 0) {
-      return(NULL)
-    } else {
-      return(nearest_sample)
-    }
-    
-  })
+  # output$hover_info <- renderPrint({
+  #   # Because it's a ggplot2, we don't need to supply xvar or yvar; if this
+  #   # were a base graphics plot, we'd need those.
+  #   nearest_sample <- nearPoints(combined_data(), input$plot_hover, threshold = 5, maxpoints = 1)
+  #   if (is.null(nearest_sample)) {
+  #     return(NULL)
+  #   } else if (nrow(nearest_sample) == 0) {
+  #     return(NULL)
+  #   } else {
+  #     return(nearest_sample)
+  #   }
+  #   
+  # })
   
   # observe({
   #   if (session$userData[['debug']]) {

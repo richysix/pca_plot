@@ -119,12 +119,6 @@ ui <- fluidPage(
                                      id = "plot_hover"
                                    ),
                                    height = "640px"
-                                 ),
-                                 fluidRow(
-                                   column(width = 12,
-                                          h4("Selected Sample"),
-                                          verbatimTextOutput("hover_info", placeholder = TRUE)
-                                   )
                                  )                     
                                ),
                                width = 9
