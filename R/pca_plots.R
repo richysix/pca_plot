@@ -22,7 +22,7 @@
 #' @export
 #'
 create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
-                            fill_palette, shape_palette, current_limits, input, session) {
+                            fill_palette, shape_palette, current_limits, input, session, ...) {
   fill_var <- input$fill_var
   shape_var <- input$shape_var
   fill_levels <- input$fill_levels_checkgroup
@@ -34,8 +34,17 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
     return(NULL)
   }
   plot_data <- subset_plot_data(plot_data, fill_var, fill_levels,
-                                shape_var, shape_levels)
-  
+                                shape_var, shape_levels, session)
+  if (session$userData[['debug']]) {
+    cat('Plot data after subset:\n')
+    print(head(plot_data))
+    print(fill_palette)
+    print(nrow(plot_data))
+  }
+  if(nrow(plot_data) == 0) {
+    cat('Plot data is empty, returning NULL\n')
+    return(NULL)
+  }
   # create plot
   plot <- 
     scatterplot_two_components(plot_data, 
@@ -43,7 +52,7 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
                                fill_var, fill_palette, 
                                shape_var, shape_palette,
                                sample_names = input$sample_names,
-                               point_size = input$point_size)
+                               point_size = input$point_size, ... )
   # set limits
   # button_val <- input$apply_limits
   limits <- get_limits(current_limits, plot_data, x_component, y_component, session)
@@ -123,7 +132,7 @@ scatterplot_two_components <-
             fill_var, fill_palette, 
             shape_var, shape_palette,
             sample_names = TRUE,
-            point_size = 4) {
+            point_size = 4, ...) {
   plot <- ggplot(data = plot_data,
                  aes_(x = as.name(x_component), y = as.name(y_component)))
   
@@ -141,13 +150,25 @@ scatterplot_two_components <-
       scale_shape_manual(values = shape_palette,
                          guide = guide_legend(order = 2))
   }
-  # add fill scale
-  plot <- plot +
-    scale_fill_manual(
-      values = fill_palette,
-      guide = guide_legend(override.aes = list(shape = 21),
-                           order = 1)
-    )
+  
+  if (class(plot_data[[fill_var]]) == 'factor') {
+    # add fill scale
+    plot <- plot +
+      scale_fill_manual(
+        values = fill_palette,
+        guide = guide_legend(override.aes = list(shape = 21),
+                             order = 1)
+      )
+  } else {
+    # fill_palette should be either viridis or diverging
+    if(fill_palette == 'viridis'){
+      plot <- plot + scale_fill_viridis(...)
+    } else if (fill_palette == 'diverging') {
+      plot <- plot +
+        scale_fill_gradient2(low = '#2166ac', mid = 'white', high = '#b2182b',
+                             midpoint = 0)
+    }
+  }
   
   # add text labels
   if (sample_names) {
@@ -172,6 +193,7 @@ scatterplot_two_components <-
 #' @param fill_levels character - a named character vectors of colours for the fill aesthetic
 #' @param shape_var character - name of the column to use as the shape aesthetic
 #' @param shape_levels character - a named character vectors of colours for the shape aesthetic
+#' @param session Shiny session_object
 #' 
 #' @return data.frame
 #'
@@ -182,15 +204,17 @@ scatterplot_two_components <-
 #' @export
 #'
 subset_plot_data <- function(plot_data, fill_var, fill_levels,
-                             shape_var, shape_levels) {
-  cat('Plot data:\n')
-  print(head(plot_data))
-  cat(sprintf('Fill variable: %s\n', fill_var))
-  cat(sprintf('Fill levels: %s\n', fill_levels))
-  cat(sprintf('Shape variable: %s\n', shape_var))
-  cat(sprintf('Shape levels: %s\n', shape_levels))
+                             shape_var, shape_levels, session) {
+  if (session$userData[['debug']]) {
+    cat('Plot data:\n')
+    print(head(plot_data))
+    cat(sprintf('Fill variable: %s\n', fill_var))
+    cat(sprintf('Fill levels: %s\n', fill_levels))
+    cat(sprintf('Shape variable: %s\n', shape_var))
+    cat(sprintf('Shape levels: %s\n', shape_levels))
+  }
   
-  # return original data if both sets of leveles are NULL
+  # return original data if both sets of levels are NULL
   if (is.null(fill_levels) & is.null(shape_levels)) {
     cat('Both fill levels and shape levels are NULL. Returning original data\n')
     return(plot_data)

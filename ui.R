@@ -23,9 +23,19 @@ ui <- fluidPage(
                                              value = TRUE),
                                
                                # Fill colour buttons
+                               h5("Fill colour"),
+                               radioButtons(
+                                 "fill_var_type",
+                                 label = h6("Variable Type"),
+                                 choices = list(
+                                   "Categorical" = 'Categorical',
+                                   "Continuous" = 'Continuous'
+                                 ),
+                                 selected = 'Categorical'
+                               ),
                                radioButtons(
                                  "fill_var",
-                                 label = h5("Fill colour Variable"),
+                                 label = h6("Fill colour Variable"),
                                  choices = list(
                                    "Gene" = 'Gene',
                                    "Genotype" = 'Genotype'
@@ -39,9 +49,10 @@ ui <- fluidPage(
                                  selected = c()
                                ),
                                # Shape buttons
+                               h5("Shape"),
                                radioButtons(
                                  "shape_var",
-                                 label = h5("Shape Variable"),
+                                 label = h6("Shape Variable"),
                                  choices = list(
                                    "None" = 'None',
                                    "Gene" = 'Gene',
@@ -55,10 +66,11 @@ ui <- fluidPage(
                                  choices = list(),
                                  selected = c()
                                ),
+                               h5("Axes"),
                                # x axis buttons
                                radioButtons(
                                  "x_axis_pc",
-                                 label = h5("X axis component"),
+                                 label = h6("X axis component"),
                                  choices = list(
                                    "PC1" = 1,
                                    "PC2" = 2
@@ -68,7 +80,7 @@ ui <- fluidPage(
                                # y axis buttons
                                radioButtons(
                                  "y_axis_pc",
-                                 label = h5("Y axis component"),
+                                 label = h6("Y axis component"),
                                  choices = list(
                                    "PC1" = 1,
                                    "PC2" = 2

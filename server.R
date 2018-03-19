@@ -3,7 +3,8 @@ for (package in c('shiny',
                   'ggplot2',
                   'reshape2',
                   'scales',
-                  'svglite')) {
+                  'svglite',
+                  'viridis')) {
   library(package, character.only = TRUE)
 }
 
@@ -103,6 +104,27 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  continuous_variables_in_data <- reactive({
+    if (session$userData[['debug']]) {
+      cat("Function: factors_in_data\n")
+    }
+    combined_data <- combined_data()
+    if(!is.null(combined_data)) {
+      variable_names <- vector('list', length = length(combined_data))
+      i <- 1
+      for (column_name in colnames(combined_data)) {
+        if (class(combined_data[[column_name]]) == 'integer' |
+            class(combined_data[[column_name]]) == 'numeric') {
+          variable_names[[i]] <- column_name
+        }
+        i <- i + 1
+      }
+      return(unlist(variable_names))
+    } else {
+      return(NULL)
+    }
+  })
+  
   # palette for shapes
   shape_palette <- reactive({
     shapes <- 21:25
@@ -129,40 +151,114 @@ shinyServer(function(input, output, session) {
       return(NULL)
     }
     fill_var <- input$fill_var
-    # check number of levels and complain if more than five
-    num_colours <- nlevels(combined_data[[fill_var]])
-    if (num_colours > length(colour_blind_palette)) {
-      ord1 <- seq(1,num_colours,2)
-      ord2 <- seq(2,num_colours,2)
-      colour_palette <- hue_pal()(num_colours)[ order(c(ord1,ord2)) ]
-      names(colour_palette) <- levels(combined_data[[fill_var]])
+    if (session$userData[['debug']]) {
+      cat("Function: colour palette\n")
+      cat(fill_var, '\n')
+    }
+    if (class(combined_data[[fill_var]]) == 'factor') {
+      # check number of levels
+      num_colours <- nlevels(combined_data[[fill_var]])
+      if (num_colours > length(colour_blind_palette)) {
+        ord1 <- seq(1,num_colours,2)
+        ord2 <- seq(2,num_colours,2)
+        colour_palette <- hue_pal()(num_colours)[ order(c(ord1,ord2)) ]
+        names(colour_palette) <- levels(combined_data[[fill_var]])
+      } else {
+        colour_palette <- colour_blind_palette[seq_len(num_colours)]
+        names(colour_palette) <- levels(combined_data[[fill_var]])
+      }
     } else {
-      colour_palette <- colour_blind_palette[seq_len(num_colours)]
-      names(colour_palette) <- levels(combined_data[[fill_var]])
+      # use viridis if all values are either less than or greater than 0
+      # otherwise use diverging scale
+      if (min(combined_data[[fill_var]], na.rm = TRUE) > 0 |
+          max(combined_data[[fill_var]], na.rm = TRUE) < 0) {
+        colour_palette <- 'viridis'
+      } else {
+        colour_palette <- 'diverging'
+      }
     }
     return(colour_palette)
   })
   
   # Change UI options based on input data
+  # Fill
   observe({
     if (session$userData[['debug']]) {
-      cat("Function: UI observer - Fill and Shape\n")
+      cat("Function: UI observer - Fill\n")
+    }
+    
+    if (input$fill_var_type == 'Categorical') {
+      if (!is.null(factors_in_data())) {
+        # fill options
+        fill_options <- as.list(factors_in_data())
+        names(fill_options) <- factors_in_data()
+        updateRadioButtons(session, "fill_var",
+                           choices = fill_options,
+                           selected = fill_options[[1]]
+        )
+      }
+    } else {
+      if (!is.null(continuous_variables_in_data())) {
+        # fill options
+        fill_options <- as.list(continuous_variables_in_data())
+        names(fill_options) <- continuous_variables_in_data()
+        updateRadioButtons(session, "fill_var",
+                           choices = fill_options,
+                           selected = fill_options[[1]]
+        )
+      }
+    }
+    
+  })
+  
+  # Change UI options based on input data
+  # Shape
+  observe({
+    if (session$userData[['debug']]) {
+      cat("Function: UI observer - Shape\n")
     }
     
     if (!is.null(factors_in_data())) {
-      # fill options
-      fill_options <- as.list(factors_in_data())
-      names(fill_options) <- factors_in_data()
-      updateRadioButtons(session, "fill_var",
-                         choices = fill_options,
-                         selected = fill_options[[1]]
-      )
-      shape_options <- append(fill_options, 'None', after = 0)
+      shape_options <- as.list(factors_in_data())
+      names(shape_options) <- factors_in_data()
+      shape_options <- append(shape_options, 'None', after = 0)
       names(shape_options)[1] <- 'None'
       updateRadioButtons(session, "shape_var",
                          choices = shape_options,
                          selected = shape_options[[1]]
       )
+    }
+  })
+  
+  # Change UI options based on input data
+  # Fill and Shape levels
+  observe({
+    if (session$userData[['debug']]) {
+      cat("Function: UI observer - Fill and Shape levels\n")
+    }
+    # Fill levels
+    combined_data <- combined_data()
+    if (!is.null(combined_data)) {
+      fill_var <- input$fill_var
+      if (class(combined_data[[fill_var]]) == 'factor') {
+        fill_levels <- levels(combined_data()[[fill_var]])
+      } else {
+        fill_levels <- list()
+      }
+      updateCheckboxGroupInput(session, "fill_levels_checkgroup", 
+                               choices = fill_levels,
+                               selected = fill_levels)
+      
+      # Shape levels
+      shape_var <- input$shape_var
+      if (shape_var == 'None') {
+        shape_levels <- list()
+      } else {
+        shape_levels <- levels(combined_data()[[shape_var]])
+        updateCheckboxGroupInput(session, "shape_levels_checkgroup", 
+                                 choices = shape_levels,
+                                 selected = shape_levels)
+      }
     }
   })
   
@@ -190,28 +286,7 @@ shinyServer(function(input, output, session) {
   })
   
   # Change UI options based on input data
-  # Fill and Shape
-  observe({
-    if (session$userData[['debug']]) {
-      cat("Function: UI observer - Fill and Shape levels\n")
-    }
-    # Fill levels
-    fill_var <- input$fill_var
-    fill_levels <- levels(combined_data()[[fill_var]])
-    updateCheckboxGroupInput(session, "fill_levels_checkgroup", 
-                             choices = fill_levels,
-                             selected = fill_levels)
-    
-    # Fill levels
-    shape_var <- input$shape_var
-    shape_levels <- levels(combined_data()[[shape_var]])
-    updateCheckboxGroupInput(session, "shape_levels_checkgroup", 
-                             choices = shape_levels,
-                             selected = shape_levels)
-    
-  })
-  
-  # Change UI options based on input data
+  # Limits
   observe({
     if (session$userData[['debug']]) {
       cat("Function: UI observer - Min/Max X/Y\n")
