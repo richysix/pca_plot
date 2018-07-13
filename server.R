@@ -5,6 +5,7 @@ library('reshape2')
 library('scales')
 library('svglite')
 library('viridis')
+library('markdown')
 
 source('R/load_data.R')
 source('R/pca_plots.R')
