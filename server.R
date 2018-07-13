@@ -1,28 +1,26 @@
-for (package in c('shiny',
-                  'shinyBS',
-                  'ggplot2',
-                  'reshape2',
-                  'scales',
-                  'svglite',
-                  'viridis')) {
-  library(package, character.only = TRUE)
-}
+library('shiny')
+library('shinyBS')
+library('ggplot2')
+library('reshape2')
+library('scales')
+library('svglite')
+library('viridis')
 
 source('R/load_data.R')
 source('R/pca_plots.R')
 
 # set default shape and fill palettes
-# shape_palette <- 21:25
-#shape_palette <- c(wt = 21, het = 22, hom = 23)
 colour_blind_palette <- 
   c( 'blue' = rgb(0,0.45,0.7),
      'yellow' = rgb(0.95, 0.9, 0.25),
-     'sky_blue' = rgb(0.35, 0.7, 0.9),
-     'purple' = rgb(0.8, 0.6, 0.7),
-     'orange' = rgb(0.9, 0.6, 0),
      'vermillion' = rgb(0.8, 0.4, 0),
+     'purple' = rgb(0.8, 0.6, 0.7),
      'blue_green' = rgb(0, 0.6, 0.5),
-     'black' = rgb(0, 0, 0) )
+     'sky_blue' = rgb(0.35, 0.7, 0.9),
+     'black' = rgb(0, 0, 0),
+     'orange' = rgb(0.9, 0.6, 0)
+  )
+shapes <- c(21:25,4,8)
 
 shinyServer(function(input, output, session) {
   # set testing and debugging options
