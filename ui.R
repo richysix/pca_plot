@@ -17,15 +17,39 @@ ui <- fluidPage(
                   tabPanel("PCA plot",
                            sidebarLayout(
                              sidebarPanel(
+                               h4('Data'),
                                fileInput('pca_data_file', 'Load PCA data file'),
                                fileInput('sample_file', 'Load Sample file'),
-                               
+                               # checkbox for using test data
+                               checkboxInput("test_data", 
+                                             label = 'Use test data',
+                                             value = FALSE),
                                h4("Options"),
                                # checkbox for displaying sample names
                                checkboxInput("sample_names", 
                                              label = 'Sample Names',
                                              value = TRUE),
-                               
+                               h5("Axes"),
+                               # x axis buttons
+                               radioButtons(
+                                 "x_axis_pc",
+                                 label = h6("X axis component"),
+                                 choices = list(
+                                   "PC1" = 1,
+                                   "PC2" = 2
+                                 ),
+                                 selected = 1
+                               ),
+                               # y axis buttons
+                               radioButtons(
+                                 "y_axis_pc",
+                                 label = h6("Y axis component"),
+                                 choices = list(
+                                   "PC1" = 1,
+                                   "PC2" = 2
+                                 ),
+                                 selected = 2
+                               ),
                                # Fill colour buttons
                                h5("Fill colour"),
                                radioButtons(
@@ -69,27 +93,6 @@ ui <- fluidPage(
                                  label = h6("Shape levels"),
                                  choices = list(),
                                  selected = c()
-                               ),
-                               h5("Axes"),
-                               # x axis buttons
-                               radioButtons(
-                                 "x_axis_pc",
-                                 label = h6("X axis component"),
-                                 choices = list(
-                                   "PC1" = 1,
-                                   "PC2" = 2
-                                 ),
-                                 selected = 1
-                               ),
-                               # y axis buttons
-                               radioButtons(
-                                 "y_axis_pc",
-                                 label = h6("Y axis component"),
-                                 choices = list(
-                                   "PC1" = 1,
-                                   "PC2" = 2
-                                 ),
-                                 selected = 2
                                ),
                                sliderInput('point_size', 'Point Size', min = 1, max = 5, value = 4, step = 1),
                                hr(),
