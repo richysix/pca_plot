@@ -1,0 +1,10 @@
+name: pca_plot
+title:
+username:
+account: richysix
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 380263
+bundleId: 1478789
+url: https://richysix.shinyapps.io/pca_plot/
+when: 1531477797.57647
