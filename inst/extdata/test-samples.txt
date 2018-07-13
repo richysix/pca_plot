@@ -1,19 +1,19 @@
-Sample_name	Gene	Genotype 	SomiteNumber
-Gene1_wt1	Gene1	wt 	25
-Gene1_wt2	Gene1	wt	23
-Gene1_wt3	Gene1	wt	24
-Gene1_het1	Gene1	het	24
-Gene1_het2	Gene1	het	24
-Gene1_het3	Gene1	het	25
-Gene1_hom1	Gene1	hom	24
-Gene1_hom2	Gene1	hom	23
-Gene1_hom3	Gene1	hom	24
-Gene2_wt1	Gene2	wt	23
-Gene2_wt2	Gene2	wt	25
-Gene2_wt3	Gene2	wt	25
-Gene2_het1	Gene2	het	24
-Gene2_het2	Gene2	het	24
-Gene2_het3	Gene2	het	26
-Gene2_hom1	Gene2	hom	15
-Gene2_hom2	Gene2	hom	16
-Gene2_hom3	Gene2	hom	17
+Sample_name	Gene	Genotype	SomiteNumber	stage
+Gene1_wt1	Gene1	wt	25	25-somites
+Gene1_wt2	Gene1	wt	23	23-somites
+Gene1_wt3	Gene1	wt	24	24-somites
+Gene1_het1	Gene1	het	22	22-somites
+Gene1_het2	Gene1	het	24	24-somites
+Gene1_het3	Gene1	het	25	25-somites
+Gene1_hom1	Gene1	hom	24	24-somites
+Gene1_hom2	Gene1	hom	23	23-somites
+Gene1_hom3	Gene1	hom	24	24-somites
+Gene2_wt1	Gene2	wt	23	23-somites
+Gene2_wt2	Gene2	wt	25	25-somites
+Gene2_wt3	Gene2	wt	25	25-somites
+Gene2_het1	Gene2	het	24	24-somites
+Gene2_het2	Gene2	het	24	24-somites
+Gene2_het3	Gene2	het	26	26-somites
+Gene2_hom1	Gene2	hom	15	15-somites
+Gene2_hom2	Gene2	hom	16	16-somites
+Gene2_hom3	Gene2	hom	17	17-somites

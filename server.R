@@ -124,27 +124,65 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  shape_variables <- reactive({
+    if (session$userData[['debug']]) {
+      cat("Function: shape_variables\n")
+    }
+    factors <- factors_in_data()
+    if (is.null(factors)) {
+      return(NULL)
+    } else {
+      combined_data <- combined_data()
+      over_threshold <- NULL
+      shape_variables <- NULL
+      for(var_name in factors) {
+        if (nlevels(combined_data[[var_name]]) > 7) {
+          over_threshold <- list(over_threshold, var_name)
+        } else {
+          shape_variables <- list(shape_variables, var_name)
+        }
+      }
+      if (length(unlist(over_threshold)) != 0) {
+        shapes_warning <-
+          paste0(
+            "Some of the shape variables have too many levels and will not be available for selecting as shape.<br>Variables removed: ",
+            paste(unlist(over_threshold), collapse = ", ")
+          )
+        createAlert(
+          session,
+          "Alert",
+          "TooManyShapesAlert",
+          title = "Too many shape levels",
+          content = shapes_warning,
+          append = FALSE,
+          style = 'warning'
+        )
+      }
+      return(unlist(shape_variables))
+    }
+  })
+  
   # palette for shapes
   shape_palette <- reactive({
-    shapes <- 21:25
+    if (session$userData[['debug']]) {
+      cat("Function: shape_palette\n")
+    }
     combined_data <- combined_data()
     if (is.null(combined_data)) {
       return(NULL)
     }
     shape_var <- input$shape_var
-    # check number of levels and complain if more than five
     num_shapes <- nlevels(combined_data[[shape_var]])
-    if (num_shapes > 5) {
-      cat('Too many shape levels!\n')
-    } else {
-      shape_palette <- shapes[seq_len(num_shapes)]
-      names(shape_palette) <- levels(combined_data[[shape_var]])
-    }
+    shape_palette <- shapes[seq_len(num_shapes)]
+    names(shape_palette) <- levels(combined_data[[shape_var]])
     return(shape_palette)
   })
   
   # palette for colours
   colour_palette <- reactive({
+    if (session$userData[['debug']]) {
+      cat("Function: colour_palette\n")
+    }
     combined_data <- combined_data()
     if (is.null(combined_data)) {
       return(NULL)
@@ -217,9 +255,9 @@ shinyServer(function(input, output, session) {
       cat("Function: UI observer - Shape\n")
     }
     
-    if (!is.null(factors_in_data())) {
-      shape_options <- as.list(factors_in_data())
-      names(shape_options) <- factors_in_data()
+    if (!is.null(shape_variables())) {
+      shape_options <- as.list(shape_variables())
+      names(shape_options) <- shape_variables()
       shape_options <- append(shape_options, 'None', after = 0)
       names(shape_options)[1] <- 'None'
       updateRadioButtons(session, "shape_var",
