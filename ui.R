@@ -8,6 +8,10 @@ for (package in c('shiny',
 ui <- fluidPage(
                 # Include shinyjs
                 useShinyjs(),
+                theme = "flatly.bootstrap.min.css",
+                tags$head(
+                  tags$link(rel = "stylesheet", type = "text/css", href = "pca_plot.css")
+                ),
                 navbarPage(
                   "PCA plot",
                   tabPanel("PCA plot",
