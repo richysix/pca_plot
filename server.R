@@ -38,7 +38,7 @@ shinyServer(function(input, output, session) {
     if (session$userData[['debug']]) {
       cat("Function: combined_data\n")
     }
-    
+    session$userData[['testing']] <- input$test_data
     if (session$userData[['testing']]){
       data_file_info <- list(datapath = 'inst/extdata/test-pca.tsv')
       sample_file_info <- list(datapath = 'inst/extdata/test-samples.txt')
@@ -104,13 +104,14 @@ shinyServer(function(input, output, session) {
   
   continuous_variables_in_data <- reactive({
     if (session$userData[['debug']]) {
-      cat("Function: factors_in_data\n")
+      cat("Function: continuous_variables_in_data\n")
     }
     combined_data <- combined_data()
     if(!is.null(combined_data)) {
-      variable_names <- vector('list', length = length(combined_data))
+      other_colnames <- colnames(combined_data)[ !grepl('PC', colnames(combined_data)) ]
+      variable_names <- vector('list', length = length(other_colnames))
       i <- 1
-      for (column_name in colnames(combined_data)) {
+      for (column_name in other_colnames) {
         if (class(combined_data[[column_name]]) == 'integer' |
             class(combined_data[[column_name]]) == 'numeric') {
           variable_names[[i]] <- column_name
