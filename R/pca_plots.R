@@ -23,6 +23,9 @@
 #'
 create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
                             fill_palette, shape_palette, current_limits, input, session, ...) {
+  if (session$userData[['debug']]) {
+    cat("Function: create_pca_plot\n")
+  }
   fill_var <- input$fill_var
   shape_var <- input$shape_var
   fill_levels <- input$fill_levels_checkgroup
@@ -62,6 +65,9 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
 }
 
 get_limits <- function(current_limits, plot_data, x_component, y_component, session){
+  if (session$userData[['debug']]) {
+    cat("Function: get_limits\n")
+  }
   data_limits <- calculate_limits(plot_data, x_component, y_component, session)
   new_limits <- list()
   for (i in c('xmin', 'xmax', 'ymin', 'ymax')) {
@@ -206,6 +212,7 @@ scatterplot_two_components <-
 subset_plot_data <- function(plot_data, fill_var, fill_levels,
                              shape_var, shape_levels, session) {
   if (session$userData[['debug']]) {
+    cat("Function: subset_plot_data\n")
     cat('Plot data:\n')
     print(head(plot_data))
     cat(sprintf('Fill variable: %s\n', fill_var))
