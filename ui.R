@@ -1,9 +1,6 @@
-for (package in c('shiny', 
-                  'shinyjs',
-                  'shinyBS',
-                  'ggplot2')) {
-  library(package, character.only = TRUE)
-}
+library('shiny')
+library('shinyjs')
+library('shinyBS')
 
 ui <- fluidPage(
                 # Include shinyjs
