@@ -106,7 +106,7 @@ ui <- fluidPage(
                                numericInput('max_y', 'Max Y:', NULL, min = NA, max = NA, step = NA,
                                             width = NULL),
                                actionButton('apply_limits', 'Apply', icon = NULL, width = NULL),
-                               # actionButton('reset_limits', 'Reset', icon = NULL, width = NULL),
+                               actionButton('reset_limits', 'Reset', icon = NULL, width = NULL),
                                hr(),
                                h4('Downloads'),
                                radioButtons(

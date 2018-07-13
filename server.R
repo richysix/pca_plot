@@ -333,67 +333,25 @@ shinyServer(function(input, output, session) {
     if (is.null(plot_data)) {
       return(NULL)
     }
-    limits$xmin = isolate(input$min_x)
-    limits$xmax = isolate(input$max_x)
-    limits$ymin = isolate(input$min_y)
-    limits$ymax = isolate(input$max_y)
+    limits$xmin <- isolate(input$min_x)
+    limits$xmax <- isolate(input$max_x)
+    limits$ymin <- isolate(input$min_y)
+    limits$ymax <- isolate(input$max_y)
   })
 
-  # output$hover_info <- renderPrint({
-  #   # Because it's a ggplot2, we don't need to supply xvar or yvar; if this
-  #   # were a base graphics plot, we'd need those.
-  #   nearest_sample <- nearPoints(combined_data(), input$plot_hover, threshold = 5, maxpoints = 1)
-  #   if (is.null(nearest_sample)) {
-  #     return(NULL)
-  #   } else if (nrow(nearest_sample) == 0) {
-  #     return(NULL)
-  #   } else {
-  #     return(nearest_sample)
-  #   }
-  #   
-  # })
-  
-  # observe({
-  #   if (session$userData[['debug']]) {
-  #     cat("Function: UI observer - Min/Max X/Y Reset\n")
-  #   }
-  #   button_val <- input$reset_limits
-  #   plot_data <- isolate(combined_data())
-  #   if (is.null(plot_data)) {
-  #     return(NULL)
-  #   }
-  #   x_component <- paste0('PC', isolate(input$x_axis_pc))
-  #   y_component <- paste0('PC', isolate(input$y_axis_pc))
-  #   limits <- calculate_limits(plot_data, x_component, y_component, session)
-  #   current_vals <- c(isolate(input$min_x), isolate(input$max_x),
-  #                     isolate(input$min_y), isolate(input$max_y) )
-  #   if (session$userData[['debug']]) {
-  #     print(current_vals)
-  #   }
-  #   if (is.null(button_val) | button_val == 0 |
-  #       all(is.na(current_vals))) {
-  #     updateNumericInput(session, 'min_x', value = old_vals[1])
-  #     updateNumericInput(session, 'max_x', value = old_vals[2])
-  #     updateNumericInput(session, 'min_y', value = old_vals[3])
-  #     updateNumericInput(session, 'max_y', value = old_vals[4])
-  #   }
-  # })
-  
-  
-  # reset limits on double click
-  # observeEvent(input$plot_dblclick, {
-  #   if (session$userData[['debug']]) {
-  #     print('Function: plot dbl-click')
-  #   }
-  #   x_component <- paste0('PC', isolate(input$x_axis_pc))
-  #   y_component <- paste0('PC', isolate(input$y_axis_pc))
-  #   plot_data <- isolate(combined_data())
-  #   # plot_limits <- c(,
-  #   #                   ceiling(max(plot_data[[x_component]]) + 0.5),
-  #   #                   floor(min(plot_data[[y_component]])),
-  #   #                   ceiling(max(plot_data[[y_component]]) + 0.5))
-  #   input$min_x <- floor(min(plot_data[[x_component]]))
-  # })
+  observeEvent(input$reset_limits, {
+    if (session$userData[['debug']]) {
+      cat("Function: UI observer - Reset Min/Max X/Y\n")
+    }
+    updateNumericInput(session, 'min_x', value = NA)
+    updateNumericInput(session, 'max_x', value = NA)
+    updateNumericInput(session, 'min_y', value = NA)
+    updateNumericInput(session, 'max_y', value = NA)
+    limits$xmin <- NA
+    limits$xmax <- NA
+    limits$ymin <- NA
+    limits$ymax <- NA
+  })
   
   # create plot object
   pca_plot_obj <- reactive({
