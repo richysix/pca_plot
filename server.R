@@ -407,8 +407,10 @@ shinyServer(function(input, output, session) {
     } else {
       first <- paste0('PC', input$x_axis_pc)
       second <- paste0('PC', input$y_axis_pc)
+      colour_palette <- colour_palette()
+      shape_palette <- shape_palette()
       plot <- create_pca_plot(plot_data, x_component = first, y_component = second,
-                              colour_palette(), shape_palette(), reactiveValuesToList(limits),
+                              colour_palette, shape_palette, reactiveValuesToList(limits),
                               input, session)
       return(plot)
     }
