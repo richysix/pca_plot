@@ -25,7 +25,7 @@ ui <- fluidPage(
                                # checkbox for displaying sample names
                                checkboxInput("sample_names", 
                                              label = 'Sample Names',
-                                             value = TRUE),
+                                             value = FALSE),
                                h5("Axes"),
                                # x axis buttons
                                radioButtons(
@@ -129,13 +129,16 @@ ui <- fluidPage(
                                           bsAlert("Alert")
                                    )
                                  ),
-                                 plotOutput(
-                                   "pca_plot",
-                                   hover = hoverOpts(
-                                     id = "plot_hover"
-                                   ),
-                                   height = "640px"
-                                 )                     
+                                 div(
+                                    style = "position:relative",
+                                    plotOutput(
+                                      "pca_plot",
+                                      height = "640px",
+                                      hover = hoverOpts(id = "plot_hover", delay = 200, 
+                                                        delayType = 'debounce')
+                                    ),
+                                    uiOutput("hover_info")
+                                 )
                                ),
                                width = 9
                              )
