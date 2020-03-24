@@ -373,9 +373,24 @@ shinyServer(function(input, output, session) {
     limits$ymax <- NA
   })
   
+  # keep track of which rows have been selected
+  vals <- reactiveValues()
+  observeEvent(combined_data(), {
+    data <- combined_data()
+    if (!is.null(data)) {
+      vals$keeprows = rep(FALSE, nrow(isolate(combined_data())))
+    }
+  })
+  observeEvent(input$plot_click, {
+    plot_data <- combined_data()
+    res <- nearPoints(plot_data, input$plot_click, threshold = 5, allRows = TRUE)
+    vals$keeprows <- xor(vals$keeprows, res$selected_)
+  })
+  
   # create plot object
   pca_plot_obj <- reactive({
     plot_data <- combined_data()
+    plot_data$highlight <- vals$keeprows
     if (session$userData[['debug']]) {
       print('Function: pca_plot_obj')
       print(head(plot_data))
@@ -387,6 +402,7 @@ shinyServer(function(input, output, session) {
       second <- paste0('PC', input$y_axis_pc)
       colour_palette <- colour_palette()
       shape_palette <- shape_palette()
+
       plot <- create_pca_plot(plot_data, x_component = first, y_component = second,
                               colour_palette, shape_palette, reactiveValuesToList(limits),
                               input, session)

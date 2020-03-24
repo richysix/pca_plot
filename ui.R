@@ -140,7 +140,8 @@ ui <- fluidPage(
                                       "pca_plot",
                                       height = "640px",
                                       hover = hoverOpts(id = "plot_hover", delay = 200, 
-                                                        delayType = 'debounce')
+                                                        delayType = 'debounce'),
+                                      click = clickOpts(id = "plot_click")
                                     ),
                                     uiOutput("hover_info")
                                  )

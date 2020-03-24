@@ -140,22 +140,32 @@ scatterplot_two_components <-
             sample_names = TRUE,
             point_size = 4, ...) {
   plot <- ggplot(data = plot_data,
-                 aes_(x = as.name(x_component), y = as.name(y_component)))
+                 aes_(x = as.name(x_component), y = as.name(y_component),
+                      colour = quote(highlight)))
   
   if (shape_var == 'None') {
     plot <- plot +
-      geom_point(aes_(fill = as.name(fill_var)),
-                 size = point_size, shape = 21,
-                 colour = 'black')
+      geom_point(aes_(fill = as.name(fill_var), 
+                      stroke = quote(highlight)),
+                 size = point_size, shape = 21)
   } else {
     plot <- plot +
       geom_point(aes_(fill = as.name(fill_var),
-                      shape = as.name(shape_var)),
-                 size = point_size,
-                 colour = 'black') +
+                      shape = as.name(shape_var), 
+                      stroke = quote(highlight)),
+                 size = point_size) +
       scale_shape_manual(values = shape_palette,
                          guide = guide_legend(order = 2))
   }
+  # add colour scale for highlighting points
+  plot <- plot + 
+    scale_colour_manual(values = c("FALSE" = 'black',  "TRUE" = 'firebrick3'),
+                                     guide = "none") +
+    scale_discrete_manual(
+      aesthetics = "stroke",
+      values = c(`FALSE` = 1, `TRUE` = 2),
+      guide = "none"
+    )
   
   if (class(plot_data[[fill_var]]) == 'factor') {
     # add fill scale
@@ -179,6 +189,12 @@ scatterplot_two_components <-
   # add text labels
   if (sample_names) {
     plot <- plot + geom_text(aes_string(label = 'sample_name'),
+                             hjust = 0, vjust = 0,
+                             nudge_x = 0.5, nudge_y = 0.5,
+                             size=4, show.legend=FALSE)
+  } else if (sum(plot_data$highlight) > 0) {
+    plot <- plot + geom_label(data = plot_data[ plot_data$highlight, ],
+                             aes_string(label = 'sample_name'),
                              hjust = 0, vjust = 0,
                              nudge_x = 0.5, nudge_y = 0.5,
                              size=4, show.legend=FALSE)
