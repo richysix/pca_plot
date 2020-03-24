@@ -27,7 +27,7 @@ shinyServer(function(input, output, session) {
   # set testing and debugging options
   session$userData[['debug']] <- TRUE
   session$userData[['testing']] <- FALSE
-  
+
   limits <- reactiveValues(
     xmin = NA,
     xmax = NA,
@@ -39,11 +39,21 @@ shinyServer(function(input, output, session) {
     if (session$userData[['debug']]) {
       cat("Function: combined_data\n")
     }
-    session$userData[['testing']] <- input$test_data
-    if (session$userData[['testing']]){
+    test_data <- input$test_data
+    if (test_data){
       data_file_info <- list(datapath = 'inst/extdata/test-pca.tsv')
       sample_file_info <- list(datapath = 'inst/extdata/test-samples.txt')
+      createAlert(
+        session,
+        "TestData",
+        "TestDataAlert",
+        title = "Using Test Data",
+        content = 'Test data supplied with the pca_plot package is being used at the moment',
+        append = FALSE,
+        style = 'warning'
+      )
     } else {
+      closeAlert(session, "TestDataAlert")
       data_file_info <- input$pca_data_file
       sample_file_info <- input$sample_file
       if (session$userData[['debug']]) {
@@ -54,21 +64,30 @@ shinyServer(function(input, output, session) {
     }
     if (!is.null(data_file_info) &
         !is.null(sample_file_info)) {
-      if (session$userData[['testing']]){
-        load('R/sysdata.rda')
-      } else {
         combined_data <- load_data(
           data_file_info$datapath,
           sample_file_info$datapath,
           session )
-      }
     } else {
-      return(NULL)
+      if (session$userData[['testing']]){
+        load('R/sysdata.rda')
+        createAlert(
+          session,
+          "TestData",
+          "Test Data",
+          title = "Using Test Data",
+          content = 'Test data supplied with the pca_plot package is being used at the moment',
+          append = FALSE,
+          style = 'warning'
+        )
+      } else {
+        return(NULL)
+      }
     }
     if (session$userData[['debug']]) {
       print(head(combined_data))
     }
-    
+
     return(combined_data)
   })
   

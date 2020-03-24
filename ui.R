@@ -126,6 +126,11 @@ ui <- fluidPage(
                                fluidPage(
                                  fluidRow(
                                    column(width = 12,
+                                          bsAlert("TestData")
+                                   )
+                                 ),
+                                 fluidRow(
+                                   column(width = 12,
                                           bsAlert("Alert")
                                    )
                                  ),
