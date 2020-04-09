@@ -88,6 +88,8 @@ shinyServer(function(input, output, session) {
       print(head(combined_data))
     }
 
+    # add highlight column and set it to all be false to start with
+    combined_data$highlight <- rep(FALSE, nrow(combined_data))
     return(combined_data)
   })
   
