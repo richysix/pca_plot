@@ -290,10 +290,10 @@ shinyServer(function(input, output, session) {
   })
   
   # Change UI options based on input data
-  # Fill and Shape levels
+  # Fill levels
   observe({
     if (session$userData[['debug']]) {
-      cat("Function: UI observer - Fill and Shape levels\n")
+      cat("Function: UI observer - Fill levels\n")
     }
     # Fill levels
     combined_data <- combined_data()
@@ -307,7 +307,18 @@ shinyServer(function(input, output, session) {
       updateCheckboxGroupInput(session, "fill_levels_checkgroup", 
                                choices = fill_levels,
                                selected = fill_levels)
-      
+    }
+  })
+  
+  # Change UI options based on input data
+  # Shape levels
+  observe({
+    if (session$userData[['debug']]) {
+      cat("Function: UI observer - Shape levels\n")
+    }
+    # Shape levels
+    combined_data <- combined_data()
+    if (!is.null(combined_data)) {
       # Shape levels
       shape_var <- input$shape_var
       if (shape_var == 'None') {
