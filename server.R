@@ -1,6 +1,7 @@
 library('shiny')
 library('shinyBS')
 library('ggplot2')
+library('ggrepel')
 library('reshape2')
 library('scales')
 library('svglite')
@@ -11,16 +12,9 @@ source('R/load_data.R')
 source('R/pca_plots.R')
 
 # set default shape and fill palettes
-colour_blind_palette <- 
-  c( 'blue' = rgb(0,0.45,0.7),
-     'yellow' = rgb(0.95, 0.9, 0.25),
-     'vermillion' = rgb(0.8, 0.4, 0),
-     'purple' = rgb(0.8, 0.6, 0.7),
-     'blue_green' = rgb(0, 0.6, 0.5),
-     'sky_blue' = rgb(0.35, 0.7, 0.9),
-     'black' = rgb(0, 0, 0),
-     'orange' = rgb(0.9, 0.6, 0)
-  )
+library('biovisr')
+# use cbf_palette to include some greys
+colour_blind_palette <- cbf_palette(10)
 shapes <- c(21:25,4,8)
 
 shinyServer(function(input, output, session) {
@@ -403,19 +397,24 @@ shinyServer(function(input, output, session) {
   # create plot object
   pca_plot_obj <- reactive({
     plot_data <- combined_data()
-    plot_data$highlight <- vals$keeprows
-    if (session$userData[['debug']]) {
-      print('Function: pca_plot_obj')
-      print(head(plot_data))
-    }
     if (is.null(plot_data)) {
       return(NULL)
     } else {
+      plot_data$highlight <- vals$keeprows
+      plot_data$sample_label <- plot_data$sample_name
+      plot_data$sample_label[ !plot_data$highlight ] <- ""
+      
+      if (session$userData[['debug']]) {
+        print('Function: pca_plot_obj')
+        print(head(plot_data))
+      }
       first <- paste0('PC', input$x_axis_pc)
       second <- paste0('PC', input$y_axis_pc)
       colour_palette <- colour_palette()
       shape_palette <- shape_palette()
-
+      
+      # remove any rows where the fill or shape values are NA
+      
       plot <- create_pca_plot(plot_data, x_component = first, y_component = second,
                               colour_palette, shape_palette, reactiveValuesToList(limits),
                               input, session)
@@ -496,8 +495,8 @@ shinyServer(function(input, output, session) {
                 width = 10) # open the svg device
       } else if (input$plotFormat == "png") {
         png(file,
-            height = 960,
-            width = 480,
+            height = 480,
+            width = 960,
             res = 100) # open the png device
       }
       print(pca_plot_obj())

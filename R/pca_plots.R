@@ -59,7 +59,8 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
   # set limits
   # button_val <- input$apply_limits
   limits <- get_limits(current_limits, plot_data, x_component, y_component, session)
-  plot <- plot + xlim(c(limits$xmin, limits$xmax)) + ylim(c(limits$ymin, limits$ymax))
+  plot <- plot + xlim(c(limits$xmin, limits$xmax)) + ylim(c(limits$ymin, limits$ymax)) +
+    coord_cartesian(clip = "off")
   
   return(plot)
 }
@@ -155,7 +156,8 @@ scatterplot_two_components <-
                       stroke = quote(highlight)),
                  size = point_size) +
       scale_shape_manual(values = shape_palette,
-                         guide = guide_legend(order = 2))
+                         guide = guide_legend(order = 2),
+                         na.translate = FALSE)
   }
   # add colour scale for highlighting points
   plot <- plot + 
@@ -188,13 +190,12 @@ scatterplot_two_components <-
   
   # add text labels
   if (sample_names) {
-    plot <- plot + geom_text(aes_string(label = 'sample_name'),
+    plot <- plot + geom_text_repel(aes_string(label = 'sample_name'),
                              hjust = 0, vjust = 0,
                              nudge_x = 0.5, nudge_y = 0.5,
                              size=4, show.legend=FALSE)
-  } else if (sum(plot_data$highlight) > 0) {
-    plot <- plot + geom_label(data = plot_data[ plot_data$highlight, ],
-                             aes_string(label = 'sample_name'),
+  } else if (sum(plot_data$highlight, na.rm = TRUE) > 0) {
+    plot <- plot + geom_label_repel(aes(label = sample_label),
                              hjust = 0, vjust = 0,
                              nudge_x = 0.5, nudge_y = 0.5,
                              size=4, show.legend=FALSE)
@@ -247,13 +248,17 @@ subset_plot_data <- function(plot_data, fill_var, fill_levels,
   if (is.null(fill_levels)) {
     plot_data_subset <- plot_data
   } else{
-    plot_data_subset <- do.call(rbind, lapply(fill_levels,
-                                              function(level){ plot_data[plot_data[[fill_var]] == level, ] }) )
+    fill_variable <- rlang::sym(fill_var)
+    plot_data_subset <- 
+      do.call(rbind, lapply(fill_levels,
+        function(level){ dplyr::filter(plot_data, !!fill_variable == level) } ) )
   }
   if (shape_var != 'None') {
+    shape_variable <- rlang::sym(shape_var)
     if (!is.null(shape_levels)) {
-      plot_data_subset <- do.call(rbind, lapply(shape_levels,
-                                                function(level){ plot_data_subset[plot_data_subset[[shape_var]] == level, ] }) )
+      plot_data_subset <- 
+        do.call(rbind, lapply(shape_levels,
+                              function(level){ dplyr::filter(plot_data, !!shape_variable == level) } ) )
     }
   }
   
