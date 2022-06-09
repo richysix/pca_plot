@@ -62,10 +62,10 @@ ui <- fluidPage(
                                  "fill_var",
                                  label = h6("Fill colour Variable"),
                                  choices = list(
-                                   "Gene" = 'Gene',
-                                   "Genotype" = 'Genotype'
+                                   "clutch" = 'clutch',
+                                   "genotype" = 'genotype'
                                  ),
-                                 selected = 'Gene'
+                                 selected = 'genotype'
                                ),
                                checkboxGroupInput(
                                  "fill_levels_checkgroup",
@@ -80,8 +80,8 @@ ui <- fluidPage(
                                  label = h6("Shape Variable"),
                                  choices = list(
                                    "None" = 'None',
-                                   "Gene" = 'Gene',
-                                   "Genotype" = 'Genotype'
+                                   "clutch" = 'clutch',
+                                   "genotype" = 'genotype'
                                  ),
                                  selected = 'None'
                                ),

@@ -20,7 +20,8 @@ load_data <- function(pca_data_file, sample_file, session) {
   pca_data <- load_pca_data(pca_data_file, session)
   sample_info <- load_sample_data(sample_file, session)
   # join data together on sample name
-  combined_data <- merge(sample_info, pca_data)
+  combined_data <- dplyr::inner_join(sample_info, pca_data,
+                                     by = c("sample_name"))
   return(combined_data)
 }
 
@@ -43,11 +44,8 @@ load_data <- function(pca_data_file, sample_file, session) {
 #' @export
 #'
 load_pca_data <- function(pca_data_file, session){
-  pca_data <- read.delim(pca_data_file, row.names = 1,
-                         check.names = FALSE)
-  pca_data$sample_name <- rownames(pca_data)
-  # # make data long
-  # pca_data_m <- melt(pca_data, variable.name = 'PC')
+  pca_data <- readr::read_tsv(pca_data_file)
+  names(pca_data)[1] <- 'sample_name'
   return(pca_data)
 }
 
@@ -72,24 +70,24 @@ load_pca_data <- function(pca_data_file, session){
 #' @export
 #'
 load_sample_data <- function(sample_file, session){
-  sample_info <- read.delim(sample_file, row.names = 1,
-                            check.names = FALSE)
-  sample_info$sample_name <- rownames(sample_info)
+  sample_info <- readr::read_tsv(sample_file)
+  names(sample_info)[1] <- 'sample_name'
   for (column_name in colnames(sample_info)) {
-    if (class(sample_info[[column_name]]) != 'factor') {
+    if (class(sample_info[[column_name]]) == 'factor') {
       next
-    }
-    # set levels to the order in which they appear in the file
-    sample_info[[column_name]] <-
-      factor(sample_info[[column_name]],
-             levels = unique(sample_info[[column_name]]))
-    # unless levels are 'wt', 'het' and 'hom'
-    if (all( Reduce('|', 
-                    lapply(c('wt', 'het', 'hom'), 
-                           function(gt){ levels(sample_info[[column_name]]) == gt }) ) ) ) {
+    } else if (class(sample_info[[column_name]]) %in% c('character', 'logical')) {
+      # set levels to the order in which they appear in the file
       sample_info[[column_name]] <-
         factor(sample_info[[column_name]],
-               levels = c('wt', 'het', 'hom'))
+               levels = unique(sample_info[[column_name]]))
+      # unless levels are 'wt', 'het' and 'hom'
+      if (all( Reduce('|', 
+                      lapply(c('wt', 'het', 'hom'), 
+                             function(gt){ levels(sample_info[[column_name]]) == gt }) ) ) ) {
+        sample_info[[column_name]] <-
+          factor(sample_info[[column_name]],
+                 levels = c('wt', 'het', 'hom'))
+      }
     }
   }
   

@@ -59,7 +59,8 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
   # set limits
   # button_val <- input$apply_limits
   limits <- get_limits(current_limits, plot_data, x_component, y_component, session)
-  plot <- plot + xlim(c(limits$xmin, limits$xmax)) + ylim(c(limits$ymin, limits$ymax)) +
+  plot <- plot + xlim(c(limits[['xmin']], limits[['xmax']])) + 
+    ylim(c(limits[['ymin']], limits[['ymax']])) +
     coord_cartesian(clip = "off")
   
   return(plot)
@@ -141,19 +142,20 @@ scatterplot_two_components <-
             sample_names = TRUE,
             point_size = 4, ...) {
   plot <- ggplot(data = plot_data,
-                 aes_(x = as.name(x_component), y = as.name(y_component),
-                      colour = quote(highlight)))
+                 aes(x = !!rlang::sym(x_component), 
+                     y = !!rlang::sym(y_component),
+                      colour = highlight))
   
   if (shape_var == 'None') {
     plot <- plot +
-      geom_point(aes_(fill = as.name(fill_var), 
-                      stroke = quote(highlight)),
+      geom_point(aes(fill = !!rlang::sym(fill_var), 
+                      stroke = highlight),
                  size = point_size, shape = 21)
   } else {
     plot <- plot +
-      geom_point(aes_(fill = as.name(fill_var),
-                      shape = as.name(shape_var), 
-                      stroke = quote(highlight)),
+      geom_point(aes(fill = !!rlang::sym(fill_var),
+                      shape = !!rlang::sym(shape_var), 
+                      stroke = highlight),
                  size = point_size) +
       scale_shape_manual(values = shape_palette,
                          guide = guide_legend(order = 2),
@@ -190,7 +192,7 @@ scatterplot_two_components <-
   
   # add text labels
   if (sample_names) {
-    plot <- plot + geom_text_repel(aes_string(label = 'sample_name'),
+    plot <- plot + geom_text_repel(aes(label = sample_name),
                              hjust = 0, vjust = 0,
                              nudge_x = 0.5, nudge_y = 0.5,
                              size=4, show.legend=FALSE)

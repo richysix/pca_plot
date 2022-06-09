@@ -2,11 +2,12 @@ library('shiny')
 library('shinyBS')
 library('ggplot2')
 library('ggrepel')
-library('reshape2')
 library('scales')
 library('svglite')
 library('viridis')
 library('markdown')
+library('readr')
+library('dplyr')
 
 source('R/load_data.R')
 source('R/pca_plots.R')
@@ -114,7 +115,8 @@ shinyServer(function(input, output, session) {
         factor_names[[i]] <- column_name
         i <- i + 1
       }
-      return(unlist(factor_names))
+      factors <- setdiff(unlist(factor_names), c('sample_name'))
+      return(factors)
     }
   })
   
