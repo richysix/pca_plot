@@ -1,0 +1,101 @@
+---
+title: "PCA Plot Shiny App"
+output: md_document
+---
+
+```{r include=FALSE, echo=FALSE, message=FALSE, warnings=FALSE}
+library('tidyverse')
+library('knitr')
+```
+# PCA Plot
+
+A shiny app for visualising results from a PCA.
+
+## Instructions
+
+The app is designed to produce 2D scatterplots of the results of a Principal Component Analysis.
+
+### Loading data
+
+Data can be loaded using the buttons at the top of the side bar control panel. Users need to supply a PCA data file along with a sample file.
+
+#### PCA file
+
+The first column is expected to be sample ids and must match the first column of the samples file.
+The column names for the principal component data are expected to be of the form PC*number*
+
+e.g.
+```{r include=TRUE, echo=FALSE}
+# load pca data
+pca_data <- read_tsv(file.path('inst', 'extdata', 'test-pca.tsv'),
+                     show_col_types = FALSE)
+kable(head(pca_data), table.attr = "class=\"table table-light\"", 
+      col.names = sub("_", " ", colnames(pca_data)),
+      format = "html")
+```
+
+#### Sample File
+
+The sample file must contain samples ids in the first column that match the first column of the PCA data file. All other columns are optional.
+
+```{r include=TRUE, echo=FALSE, results='asis'}
+# load sample data
+sample_data <- read_tsv(file.path('inst', 'extdata', 'test-samples.txt'),
+                     show_col_types = FALSE)
+kable(head(sample_data), table.attr = "class=\"table table-light\"", 
+      col.names = sub("_", " ", colnames(sample_data)),
+      format = "html")
+```
+
+#### Test Data
+
+There is also an option to load some pre-prepared test data.
+
+### PCA plot
+
+The plot defaults are to plot PC1 against PC2 with the first categorical variable being used as the fill colour for the points.
+
+#### Options
+
+##### Sample Names
+
+Sample ids are plotted next to each point by default. This can be altered using this checkbox.
+
+##### Axes
+
+The *X axis component* and *Y axis component* radio buttons can be used to select which components are plotted against each other.
+
+##### Fill Colour
+
+You can change both the type of variable (Categorical or Continuous) and which variable is mapped to the colour of the points.
+For Categorical variables, a colour-blind friendly palette is used if there are 8 or less levels.
+Otherwise, it attempts to select colours that are as different as possible.
+The actual levels displayed can be altered using the "Fill levels" checkbox group.
+
+For Continuous variables, the [viridis](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) palette
+is used unless the scale has both positive and negative values, in which case a diverging red-white-blue palette is used.
+
+##### Shape
+
+Only Categorical variables can be mapped to shape and only if there are 7 different levels or less.
+The default is not to map shape to any variable. All points will appear as circles.
+The actual levels displayed can be altered using the "Shape levels" checkbox group.
+
+##### Point Size
+
+This slider can be used to alter the size of the points.
+
+##### Set Limits
+
+The limits of the X and Y scale can be set manually. The 'Apply' button needs to be clicked before any changes take effect.
+The 'Reset' button resets the limits so that all the points are displayed.
+
+#### Downloads
+
+The **Download plot** button downloads the current plot as either a pdf, png, eps or svg.
+
+The **Download all (pdf)** button downloads a pdf containing each component plotted against the next one.
+
+The **Download rda file of plot** button downloads an rda file of the current plot to allow further customisation in R.
+The plot is saved as a ggplot2 object called 'pca_plot'.
+
