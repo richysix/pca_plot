@@ -1,10 +1,14 @@
 name: pca_plot
-title:
+title: pca_plot
 username:
 account: richysix
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 380263
-bundleId: 1478789
+bundleId: 5992128
 url: https://richysix.shinyapps.io/pca_plot/
-when: 1531477797.57647
+when: 1654767743.04371
+lastSyncTime: 1654767743.04372
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: R/create_test_data.R|README.Rmd
