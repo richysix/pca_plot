@@ -1,6 +1,7 @@
 # PCA Plot
 
-A shiny app for visualising results from a PCA.
+A shiny app for visualising results from a PCA.  
+[https://richysix.shinyapps.io/pca_plot](https://richysix.shinyapps.io/pca_plot)
 
 ## Instructions
 
