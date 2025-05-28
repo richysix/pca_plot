@@ -16,7 +16,8 @@ test_sample_data <- tibble(
                     levels = c('wt', 'het', 'hom')),
   somiteNumber = sample(somite_numbers, num_samples, replace = TRUE),
   stage = factor(paste0(somiteNumber, '-somites'),
-                 levels = paste0(somite_numbers, '-somites'))
+                 levels = paste0(somite_numbers, '-somites')),
+  diverging_scale = rnorm(n = num_samples)
 ) %>% arrange(., somiteNumber, clutch)
 
 # make PC4 proportional to somite number

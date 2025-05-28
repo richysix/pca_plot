@@ -1,19 +1,19 @@
-sample_name	clutch	genotype	somiteNumber	stage
-sample-8	clutch1	hom	17	17-somites
-sample-15	clutch2	het	17	17-somites
-sample-1	clutch1	wt	18	18-somites
-sample-5	clutch1	het	18	18-somites
-sample-11	clutch2	wt	18	18-somites
-sample-2	clutch1	wt	19	19-somites
-sample-4	clutch1	het	20	20-somites
-sample-16	clutch2	hom	21	21-somites
-sample-7	clutch1	hom	22	22-somites
-sample-9	clutch1	hom	22	22-somites
-sample-12	clutch2	wt	22	22-somites
-sample-3	clutch1	wt	23	23-somites
-sample-6	clutch1	het	23	23-somites
-sample-17	clutch2	hom	23	23-somites
-sample-10	clutch2	wt	24	24-somites
-sample-13	clutch2	het	24	24-somites
-sample-18	clutch2	hom	24	24-somites
-sample-14	clutch2	het	25	25-somites
+sample_name	clutch	genotype	somiteNumber	stage	diverging_scale
+sample-8	clutch1	hom	17	17-somites	-0.35972048249422817
+sample-15	clutch2	het	17	17-somites	-1.5526743594245374
+sample-1	clutch1	wt	18	18-somites	0.6244602709162107
+sample-5	clutch1	het	18	18-somites	-1.3099728242476683
+sample-11	clutch2	wt	18	18-somites	0.44924902048954546
+sample-2	clutch1	wt	19	19-somites	0.36113817298526163
+sample-4	clutch1	het	20	20-somites	0.3681091293703338
+sample-16	clutch2	hom	21	21-somites	-1.3291320344383712
+sample-7	clutch1	hom	22	22-somites	1.057715458766517
+sample-9	clutch1	hom	22	22-somites	-0.3437322076692593
+sample-12	clutch2	wt	22	22-somites	-0.6415021163143596
+sample-3	clutch1	wt	23	23-somites	-1.8995432544857829
+sample-6	clutch1	het	23	23-somites	-1.4353401903681169
+sample-17	clutch2	hom	23	23-somites	1.442410634658832
+sample-10	clutch2	wt	24	24-somites	0.5369688368851288
+sample-13	clutch2	het	24	24-somites	-0.6418451108692514
+sample-18	clutch2	hom	24	24-somites	0.03698683832509442
+sample-14	clutch2	het	25	25-somites	0.42741828851058455
