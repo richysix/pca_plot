@@ -44,7 +44,7 @@ create_pca_plot <- function(plot_data, x_component = 'PC1', y_component = 'PC2',
     print(fill_palette)
     print(nrow(plot_data))
   }
-  if(nrow(plot_data) == 0) {
+  if (nrow(plot_data) == 0) {
     cat('Plot data is empty, returning NULL\n')
     return(NULL)
   }
@@ -181,12 +181,11 @@ scatterplot_two_components <-
       )
   } else {
     # fill_palette should be either viridis or diverging
-    if(fill_palette == 'viridis'){
+    if (fill_palette == 'viridis') {
       plot <- plot + scale_fill_viridis(...)
     } else if (fill_palette == 'diverging') {
       plot <- plot +
-        scale_fill_gradient2(low = '#2166ac', mid = 'white', high = '#b2182b',
-                             midpoint = 0)
+        scale_fill_distiller(type = "div", palette = "BrBG")
     }
   }
   
@@ -195,12 +194,12 @@ scatterplot_two_components <-
     plot <- plot + geom_text_repel(aes(label = sample_name),
                              hjust = 0, vjust = 0,
                              nudge_x = 0.5, nudge_y = 0.5,
-                             size=4, show.legend=FALSE)
+                             size = 4, show.legend = FALSE)
   } else if (sum(plot_data$highlight, na.rm = TRUE) > 0) {
     plot <- plot + geom_label_repel(aes(label = sample_label),
                              hjust = 0, vjust = 0,
                              nudge_x = 0.5, nudge_y = 0.5,
-                             size=4, show.legend=FALSE)
+                             size = 4, show.legend = FALSE)
   }
   # change theme
   plot <- plot + theme_minimal()
